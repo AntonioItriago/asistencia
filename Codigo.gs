@@ -9,7 +9,7 @@ function doPost(e) {
 
   let respuesta = {};
 
-  switch (data.accion) {
+    switch (data.accion) {
     case 'login':
       respuesta = procesarLogin(data.usuario, data.password);
       break;
@@ -28,6 +28,9 @@ function doPost(e) {
     case 'listar_asistencias':
       respuesta = listarAsistencias();
       break;
+    case 'cambiar_password':
+      respuesta = cambiarPassword(data.usuario, data.passwordActual, data.passwordNueva);
+      break;
     default:
       respuesta = { exito: false, mensaje: "Acción no reconocida" };
   }
@@ -38,6 +41,27 @@ function doPost(e) {
 
 function doGet(e) {
   return doPost(e);
+}
+
+// Nueva función para cambiar contraseña:
+function cambiarPassword(usuario, passwordActual, passwordNueva) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Usuarios');
+  const datos = sheet.getDataRange().getValues();
+  
+  for (let i = 1; i < datos.length; i++) {
+    if (String(datos[i][0]).trim() === String(usuario).trim()) {
+      // Verificar contraseña actual
+      if (String(datos[i][1]).trim() !== String(passwordActual).trim()) {
+        return { exito: false, mensaje: "La contraseña actual es incorrecta" };
+      }
+      
+      // Actualizar contraseña
+      sheet.getRange(i + 1, 2).setValue(passwordNueva);
+      return { exito: true, mensaje: "Contraseña actualizada exitosamente" };
+    }
+  }
+  
+  return { exito: false, mensaje: "Usuario no encontrado" };
 }
 
 // ==================== LOGIN ====================

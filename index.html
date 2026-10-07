@@ -58,6 +58,45 @@
         
         /* Mensaje de error bloqueante */
         .error-bloqueante { background: #dc3545; color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
+        /* Contenedor flex para alinear título y botón */
+.titulo-con-boton {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 25px 0 15px 0;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 8px;
+}
+
+.titulo-con-boton h3 {
+    margin: 0;
+    border: none;
+    padding: 0;
+}
+
+/* Botón pequeño para cambiar contraseña */
+.btn-cambiar-pass {
+    background-color: #6f42c1;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    width: auto;
+    margin: 0;
+    transition: background 0.3s;
+}
+
+.btn-cambiar-pass:hover {
+    background-color: #5a32a3;
+}
+
+/* Ajuste para el modal de cambiar contraseña */
+#modal-cambiar-pass .modal-content {
+    max-width: 400px;
+}
     </style>
 </head>
 <body>
@@ -81,7 +120,7 @@
             <button onclick="iniciarSesion()" id="btn-login">Ingresar</button>
             <p id="msg-login" class="error"></p>
         </div>
-
+        
         <!-- PANEL USUARIO -->
 <div id="pantalla-usuario" class="pantalla">
     <h2>👤 Panel de Empleado</h2>
@@ -91,7 +130,14 @@
          Instalar Aplicación en este dispositivo
     </button>
     
-    <h3>📍 Registrar Jornada</h3>
+    <!-- Título con botón de cambiar contraseña alineado a la derecha -->
+    <div class="titulo-con-boton">
+        <h3>📍 Registrar Jornada</h3>
+        <button class="btn-cambiar-pass" onclick="mostrarModalCambiarPass()">
+            🔑 Cambiar Contraseña
+        </button>
+    </div>
+    
     <p style="text-align: center; color: #666; font-size: 14px; margin-bottom: 15px;">
         GPS obligatorio para todos los registros. Cámara obligatoria para Entrada y Salida.
     </p>
@@ -101,13 +147,13 @@
             ✅ Entrada
         </button>
         <button class="btn-warning" onclick="iniciarRegistro('comida-in')">
-            🍽️ Comida In
+            ️ Comida In
         </button>
         <button class="btn-info" onclick="iniciarRegistro('comida-out')">
             ☕ Comida Out
         </button>
         <button class="btn-danger" onclick="iniciarRegistro('salida')">
-            🚪 Salida
+             Salida
         </button>
     </div>
     
@@ -119,6 +165,30 @@
     
     <button class="btn-secondary" onclick="cerrarSesion()" style="margin-top: 20px;">Cerrar Sesión</button>
     <p id="msg-user" class="exito"></p>
+</div>
+
+<!-- MODAL PARA CAMBIAR CONTRASEÑA -->
+<div id="modal-cambiar-pass" class="modal">
+    <div class="modal-content">
+        <h3>🔑 Cambiar Contraseña</h3>
+        <div class="form-group">
+            <label>Contraseña actual:</label>
+            <input type="password" id="pass-actual" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+            <label>Nueva contraseña:</label>
+            <input type="password" id="pass-nueva" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+            <label>Confirmar nueva contraseña:</label>
+            <input type="password" id="pass-confirmar" autocomplete="new-password">
+        </div>
+        <p id="msg-cambiar-pass" class="error"></p>
+        <div class="modal-buttons">
+            <button onclick="cambiarContrasena()" class="btn-success">💾 Guardar</button>
+            <button onclick="cerrarModalCambiarPass()" class="btn-secondary">❌ Cancelar</button>
+        </div>
+    </div>
 </div>
 
         <!-- PANEL ADMIN -->
@@ -630,6 +700,71 @@ async function cargarMiRegistro() {
         }
     } catch (error) {
         contenedor.innerHTML = '<p class="error">Error al cargar</p>';
+    }
+}
+// ==================== MODAL CAMBIAR CONTRASEÑA ====================
+function mostrarModalCambiarPass() {
+    document.getElementById('modal-cambiar-pass').style.display = 'block';
+    document.getElementById('pass-actual').value = '';
+    document.getElementById('pass-nueva').value = '';
+    document.getElementById('pass-confirmar').value = '';
+    document.getElementById('msg-cambiar-pass').innerText = '';
+}
+
+function cerrarModalCambiarPass() {
+    document.getElementById('modal-cambiar-pass').style.display = 'none';
+}
+
+async function cambiarContrasena() {
+    const passActual = document.getElementById('pass-actual').value.trim();
+    const passNueva = document.getElementById('pass-nueva').value.trim();
+    const passConfirmar = document.getElementById('pass-confirmar').value.trim();
+    const msg = document.getElementById('msg-cambiar-pass');
+
+    // Validaciones
+    if (!passActual || !passNueva || !passConfirmar) {
+        msg.innerText = '❌ Todos los campos son obligatorios';
+        msg.style.color = 'red';
+        return;
+    }
+
+    if (passNueva.length < 6) {
+        msg.innerText = '❌ La nueva contraseña debe tener al menos 6 caracteres';
+        msg.style.color = 'red';
+        return;
+    }
+
+    if (passNueva !== passConfirmar) {
+        msg.innerText = '❌ Las contraseñas nuevas no coinciden';
+        msg.style.color = 'red';
+        return;
+    }
+
+    msg.innerText = '⏳ Validando...';
+    msg.style.color = 'blue';
+
+    try {
+        const data = await llamarAppsScript({
+            accion: 'cambiar_password',
+            usuario: usuarioActual,
+            passwordActual: passActual,
+            passwordNueva: passNueva
+        });
+
+        if (data.exito) {
+            msg.innerText = '✅ ' + data.mensaje;
+            msg.style.color = 'green';
+            setTimeout(() => {
+                cerrarModalCambiarPass();
+                alert('✅ Contraseña actualizada exitosamente');
+            }, 1500);
+        } else {
+            msg.innerText = '❌ ' + data.mensaje;
+            msg.style.color = 'red';
+        }
+    } catch (error) {
+        msg.innerText = '❌ Error de conexión';
+        msg.style.color = 'red';
     }
 }
     </script>
