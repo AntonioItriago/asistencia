@@ -97,6 +97,97 @@
 #modal-cambiar-pass .modal-content {
     max-width: 400px;
 }
+/* Botón cambiar contraseña ADMIN (más destacado) */
+.btn-cambiar-pass-admin {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    width: auto;
+    margin: 0;
+    transition: all 0.3s;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+.btn-cambiar-pass-admin:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4);
+}
+
+/* Modal específico para admin */
+.modal-admin-pass {
+    max-width: 500px;
+}
+
+/* Alerta de seguridad */
+.alerta-seguridad {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin: 15px 0;
+    font-size: 13px;
+    color: #856404;
+    text-align: left;
+}
+
+/* Requisitos de contraseña */
+.requisitos-pass {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin: 15px 0;
+    font-size: 13px;
+}
+
+.requisitos-pass ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0 0;
+}
+
+.requisitos-pass li {
+    padding: 3px 0;
+    transition: color 0.3s;
+}
+
+.requisitos-pass li.cumplido {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.requisitos-pass li.no-cumplido {
+    color: #dc3545;
+}
+
+/* Barra de fortaleza */
+.barra-fortaleza {
+    width: 100%;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.barra-fortaleza-fill {
+    height: 100%;
+    width: 0%;
+    transition: all 0.3s;
+    border-radius: 4px;
+}
+
+.fortaleza-texto {
+    font-size: 12px;
+    margin-top: 5px;
+    text-align: center;
+    font-weight: 600;
+}
     </style>
 </head>
 <body>
@@ -192,57 +283,117 @@
 </div>
 
         <!-- PANEL ADMIN -->
-        <div id="pantalla-admin" class="pantalla">
-            <h2>️ Panel de Administración General</h2>
-            <div class="info-box">Administrador: <strong id="nombre-admin"></strong></div>
-            
-            <h3>➕ Registrar Nuevo Empleado</h3>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>Usuario:</label>
-                    <input type="text" id="emp-usuario" placeholder="usuario123" autocomplete="off">
-                </div>
-                <div class="form-group">
-                    <label>Password:</label>
-                    <input type="text" id="emp-password" placeholder="contraseña" autocomplete="new-password">
-                </div>
-                <div class="form-group">
-                    <label>Nombre y Apellido:</label>
-                    <input type="text" id="emp-nombre" placeholder="Juan Pérez">
-                </div>
-                <div class="form-group">
-                    <label>Área:</label>
-                    <input type="text" id="emp-area" placeholder="Ventas">
-                </div>
-                <div class="form-group">
-                    <label>Cargo:</label>
-                    <input type="text" id="emp-cargo" placeholder="Vendedor">
-                </div>
-                <div class="form-group">
-                    <label>Perfil:</label>
-                    <select id="emp-perfil">
-                        <option value="usuario">Usuario</option>
-                        <option value="admin">Administrador</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn-success" onclick="crearEmpleado()">💾 Guardar Empleado</button>
-            <p id="msg-crear" class="exito"></p>
-
-            <h3>📋 Lista de Empleados</h3>
-            <button onclick="cargarEmpleados()">🔄 Actualizar Lista</button>
-            <div id="tabla-empleados">
-                <p class="loading">Haz clic en "Actualizar Lista" para cargar</p>
-            </div>
-
-            <h3>📊 Registros de Asistencia</h3>
-            <button onclick="cargarAsistencias()">🔄 Cargar Registros</button>
-            <div id="tabla-asistencias">
-                <p class="loading">Haz clic en "Cargar Registros" para ver</p>
-            </div>
-
-            <button class="btn-secondary" onclick="cerrarSesion()">Cerrar Sesión</button>
+<div id="pantalla-admin" class="pantalla">
+    <h2>⚙️ Panel de Administración General</h2>
+    <div class="info-box">Administrador: <strong id="nombre-admin"></strong></div>
+    
+    <!-- Título con botón de cambiar contraseña alineado a la derecha -->
+    <div class="titulo-con-boton">
+        <h3>➕ Registrar Nuevo Empleado</h3>
+        <button class="btn-cambiar-pass-admin" onclick="mostrarModalCambiarPassAdmin()">
+            🔑 Cambiar mi Contraseña
+        </button>
+    </div>
+    
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Usuario:</label>
+            <input type="text" id="emp-usuario" placeholder="usuario123" autocomplete="off">
         </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="text" id="emp-password" placeholder="contraseña" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+            <label>Nombre y Apellido:</label>
+            <input type="text" id="emp-nombre" placeholder="Juan Pérez">
+        </div>
+        <div class="form-group">
+            <label>Área:</label>
+            <input type="text" id="emp-area" placeholder="Ventas">
+        </div>
+        <div class="form-group">
+            <label>Cargo:</label>
+            <input type="text" id="emp-cargo" placeholder="Vendedor">
+        </div>
+        <div class="form-group">
+            <label>Perfil:</label>
+            <select id="emp-perfil">
+                <option value="usuario">Usuario</option>
+                <option value="admin">Administrador</option>
+            </select>
+        </div>
+    </div>
+    <button class="btn-success" onclick="crearEmpleado()">💾 Guardar Empleado</button>
+    <p id="msg-crear" class="exito"></p>
+
+    <h3>📋 Lista de Empleados</h3>
+    <button onclick="cargarEmpleados()">🔄 Actualizar Lista</button>
+    <div id="tabla-empleados">
+        <p class="loading">Haz clic en "Actualizar Lista" para cargar</p>
+    </div>
+
+    <h3>📊 Registros de Asistencia</h3>
+    <button onclick="cargarAsistencias()">🔄 Cargar Registros</button>
+    <div id="tabla-asistencias">
+        <p class="loading">Haz clic en "Cargar Registros" para ver</p>
+    </div>
+
+    <button class="btn-secondary" onclick="cerrarSesion()">Cerrar Sesión</button>
+</div>
+
+<!-- MODAL CAMBIAR CONTRASEÑA ADMIN (con validación estricta) -->
+<div id="modal-cambiar-pass-admin" class="modal">
+    <div class="modal-content modal-admin-pass">
+        <h3>🔐 Cambiar Contraseña de Administrador</h3>
+        
+        <div class="alerta-seguridad">
+            ⚠️ <strong>Importante:</strong> Como administrador manejas información sensible 
+            (datos de empleados, registros de asistencia, ubicaciones GPS y fotos). 
+            Por seguridad, tu contraseña debe ser <strong>robusta</strong> para proteger 
+            estos datos de accesos no autorizados.
+        </div>
+        
+        <div class="form-group">
+            <label>Contraseña actual:</label>
+            <input type="password" id="admin-pass-actual" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+            <label>Nueva contraseña:</label>
+            <input type="password" id="admin-pass-nueva" autocomplete="new-password" 
+                   oninput="validarFortalezaPass()">
+            <div id="barra-fortaleza" class="barra-fortaleza">
+                <div id="barra-fortaleza-fill" class="barra-fortaleza-fill"></div>
+            </div>
+            <p id="fortaleza-texto" class="fortaleza-texto">Ingresa una contraseña</p>
+        </div>
+        <div class="form-group">
+            <label>Confirmar nueva contraseña:</label>
+            <input type="password" id="admin-pass-confirmar" autocomplete="new-password">
+        </div>
+        
+        <div class="requisitos-pass">
+            <strong>Requisitos obligatorios:</strong>
+            <ul id="lista-requisitos">
+                <li id="req-longitud">❌ Mínimo 8 caracteres</li>
+                <li id="req-mayus">❌ Al menos una letra MAYÚSCULA</li>
+                <li id="req-minus">❌ Al menos una letra minúscula</li>
+                <li id="req-numero">❌ Al menos un número (0-9)</li>
+                <li id="req-especial">❌ Al menos un carácter especial (!@#$%^&*...)</li>
+            </ul>
+        </div>
+        
+        <p id="msg-cambiar-pass-admin" class="error"></p>
+        <div class="modal-buttons">
+            <button onclick="cambiarContrasenaAdmin()" class="btn-success" id="btn-guardar-admin" disabled>
+                💾 Guardar
+            </button>
+            <button onclick="cerrarModalCambiarPassAdmin()" class="btn-secondary">
+                ❌ Cancelar
+            </button>
+        </div>
+    </div>
+</div>
 
     </div>
 
@@ -757,6 +908,167 @@ async function cambiarContrasena() {
             setTimeout(() => {
                 cerrarModalCambiarPass();
                 alert('✅ Contraseña actualizada exitosamente');
+            }, 1500);
+        } else {
+            msg.innerText = '❌ ' + data.mensaje;
+            msg.style.color = 'red';
+        }
+    } catch (error) {
+        msg.innerText = '❌ Error de conexión';
+        msg.style.color = 'red';
+    }
+}
+// ==================== MODAL CAMBIAR CONTRASEÑA ADMIN ====================
+function mostrarModalCambiarPassAdmin() {
+    document.getElementById('modal-cambiar-pass-admin').style.display = 'block';
+    document.getElementById('admin-pass-actual').value = '';
+    document.getElementById('admin-pass-nueva').value = '';
+    document.getElementById('admin-pass-confirmar').value = '';
+    document.getElementById('msg-cambiar-pass-admin').innerText = '';
+    document.getElementById('btn-guardar-admin').disabled = true;
+    resetearRequisitos();
+}
+
+function cerrarModalCambiarPassAdmin() {
+    document.getElementById('modal-cambiar-pass-admin').style.display = 'none';
+}
+
+function resetearRequisitos() {
+    const requisitos = ['req-longitud', 'req-mayus', 'req-minus', 'req-numero', 'req-especial'];
+    requisitos.forEach(id => {
+        const el = document.getElementById(id);
+        el.innerText = el.innerText.replace('✅', '❌');
+        el.classList.remove('cumplido');
+        el.classList.add('no-cumplido');
+    });
+    document.getElementById('barra-fortaleza-fill').style.width = '0%';
+    document.getElementById('fortaleza-texto').innerText = 'Ingresa una contraseña';
+    document.getElementById('fortaleza-texto').style.color = '#666';
+}
+
+// Validación en tiempo real de la fortaleza
+function validarFortalezaPass() {
+    const pass = document.getElementById('admin-pass-nueva').value;
+    const confirmar = document.getElementById('admin-pass-confirmar').value;
+    
+    // Verificar cada requisito
+    const tieneLongitud = pass.length >= 8;
+    const tieneMayus = /[A-Z]/.test(pass);
+    const tieneMinus = /[a-z]/.test(pass);
+    const tieneNumero = /[0-9]/.test(pass);
+    const tieneEspecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass);
+    
+    // Actualizar UI de requisitos
+    actualizarRequisito('req-longitud', tieneLongitud, 'Mínimo 8 caracteres');
+    actualizarRequisito('req-mayus', tieneMayus, 'Al menos una letra MAYÚSCULA');
+    actualizarRequisito('req-minus', tieneMinus, 'Al menos una letra minúscula');
+    actualizarRequisito('req-numero', tieneNumero, 'Al menos un número (0-9)');
+    actualizarRequisito('req-especial', tieneEspecial, 'Al menos un carácter especial (!@#$%^&*...)');
+    
+    // Calcular fortaleza
+    const cumplidos = [tieneLongitud, tieneMayus, tieneMinus, tieneNumero, tieneEspecial]
+                      .filter(v => v).length;
+    const porcentaje = (cumplidos / 5) * 100;
+    
+    const barra = document.getElementById('barra-fortaleza-fill');
+    const texto = document.getElementById('fortaleza-texto');
+    barra.style.width = porcentaje + '%';
+    
+    if (cumplidos === 0) {
+        texto.innerText = 'Ingresa una contraseña';
+        texto.style.color = '#666';
+        barra.style.background = '#e9ecef';
+    } else if (cumplidos <= 2) {
+        texto.innerText = '🔴 Débil';
+        texto.style.color = '#dc3545';
+        barra.style.background = '#dc3545';
+    } else if (cumplidos <= 4) {
+        texto.innerText = '🟡 Media';
+        texto.style.color = '#ffc107';
+        barra.style.background = '#ffc107';
+    } else {
+        texto.innerText = '🟢 Fuerte';
+        texto.style.color = '#28a745';
+        barra.style.background = '#28a745';
+    }
+    
+    // Habilitar botón solo si todos los requisitos se cumplen Y las contraseñas coinciden
+    const todasCumplidas = tieneLongitud && tieneMayus && tieneMinus && tieneNumero && tieneEspecial;
+    const coinciden = pass === confirmar && pass.length > 0;
+    document.getElementById('btn-guardar-admin').disabled = !(todasCumplidas && coinciden);
+}
+
+function actualizarRequisito(id, cumplido, textoBase) {
+    const el = document.getElementById(id);
+    if (cumplido) {
+        el.innerText = '✅ ' + textoBase;
+        el.classList.remove('no-cumplido');
+        el.classList.add('cumplido');
+    } else {
+        el.innerText = '❌ ' + textoBase;
+        el.classList.remove('cumplido');
+        el.classList.add('no-cumplido');
+    }
+}
+
+// Evento para validar cuando el usuario escribe en "confirmar"
+document.getElementById('admin-pass-confirmar').addEventListener('input', validarFortalezaPass);
+
+async function cambiarContrasenaAdmin() {
+    const passActual = document.getElementById('admin-pass-actual').value.trim();
+    const passNueva = document.getElementById('admin-pass-nueva').value.trim();
+    const passConfirmar = document.getElementById('admin-pass-confirmar').value.trim();
+    const msg = document.getElementById('msg-cambiar-pass-admin');
+
+    // Validaciones finales (por seguridad, aunque el botón ya está deshabilitado si no cumple)
+    if (!passActual || !passNueva || !passConfirmar) {
+        msg.innerText = '❌ Todos los campos son obligatorios';
+        msg.style.color = 'red';
+        return;
+    }
+
+    if (passNueva.length < 8) {
+        msg.innerText = '❌ La contraseña debe tener al menos 8 caracteres';
+        msg.style.color = 'red';
+        return;
+    }
+
+    if (passNueva !== passConfirmar) {
+        msg.innerText = '❌ Las contraseñas nuevas no coinciden';
+        msg.style.color = 'red';
+        return;
+    }
+
+    // Validación de fortaleza con regex
+    const tieneMayus = /[A-Z]/.test(passNueva);
+    const tieneMinus = /[a-z]/.test(passNueva);
+    const tieneNumero = /[0-9]/.test(passNueva);
+    const tieneEspecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(passNueva);
+
+    if (!tieneMayus || !tieneMinus || !tieneNumero || !tieneEspecial) {
+        msg.innerText = '❌ La contraseña no cumple con todos los requisitos de seguridad';
+        msg.style.color = 'red';
+        return;
+    }
+
+    msg.innerText = '⏳ Validando y actualizando...';
+    msg.style.color = 'blue';
+
+    try {
+        const data = await llamarAppsScript({
+            accion: 'cambiar_password',
+            usuario: usuarioActual,
+            passwordActual: passActual,
+            passwordNueva: passNueva
+        });
+
+        if (data.exito) {
+            msg.innerText = '✅ ' + data.mensaje;
+            msg.style.color = 'green';
+            setTimeout(() => {
+                cerrarModalCambiarPassAdmin();
+                alert('✅ Contraseña de administrador actualizada exitosamente.\n\nPor seguridad, se recomienda cerrar sesión e iniciar nuevamente con la nueva contraseña.');
+                cerrarSesion();
             }, 1500);
         } else {
             msg.innerText = '❌ ' + data.mensaje;
